@@ -33,3 +33,17 @@ ASAN_OPTIONS=detect_leaks=0,abort_on_error=1,symbolize=0 afl-fuzz -i './afl_in' 
 В итоге получим следущий вывод 
 ![alt text](images/image-1.png)
 ## Сбор покрытия по результатам фаззинг-тестирования
+Для сбора покрытия добавим флаги ```--coverage```
+```bash
+CC=afl-clang-lto CXX=afl-clang-lto++ PKG_CONFIG_PATH=$PKG_CONFIG_PATH:$HOME/Fuzzing_gimp/gegl-0.2.0/ CFLAGS="--coverage -fsanitize=address" CXXFLAGS="--coverage -fsanitize=address" LDFLAGS="--coverage -fsanitize=address" ./configure --disable-gtktest --disable-glibtest --disable-alsatest --disable-nls --without-libtiff --without-libjpeg --without-bzip2 --without-gs --without-libpng --without-libmng --without-libexif --without-aa --without-libxpm --without-webkit --without-librsvg --without-print --without-poppler --without-cairo-pdf --without-gvfs --without-libcurl --without-wmf --without-libjasper --without-alsa --without-gudev --disable-python --enable-gimp-console --without-mac-twain --without-script-fu --without-gudev --without-dbus --disable-mp --without-linux-input --without-xvfb-run --with-gif-compression=none --without-xmc --with-shm=none --enable-debug  --prefix="$HOME/Fuzzing_gimp/gimp-2.8.16/install"
+```
+После остановки фаззинга пропишем следующие команды
+```bash
+lcov --capture --directory . --output-file coverage.info
+
+lcov --remove coverage.info '/usr/include/*' -o filtered.info
+
+xdg-open coverage_report/index.html
+```
+Получим следующий результат
+![alt text](images/image2.png)
